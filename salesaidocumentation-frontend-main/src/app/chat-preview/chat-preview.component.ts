@@ -932,7 +932,7 @@ export class ChatPreviewComponent implements OnInit {
   selectTubeColourCoding(option: string): void {
     this.searchParams.tubeColourCoding = option;
     this.tubeColourCodingOptions = [];
-  }
+  } 
 
   // Toggle search section collapse/expand
   // toggleSearchSection(): void {
