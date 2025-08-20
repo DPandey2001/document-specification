@@ -837,7 +837,7 @@ export class ChatPreviewComponent implements OnInit {
   selectDiameter(option: string): void {
     this.searchParams.diameter = option;
     this.diameterOptions = [];
-  }
+  } 
 
   // Tensile Strength methods
   private fetchTensileStrengthOptions(): void {
