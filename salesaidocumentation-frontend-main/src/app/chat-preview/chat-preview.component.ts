@@ -346,7 +346,11 @@ export class ChatPreviewComponent implements OnInit {
     
     const searchPayload = this.buildSearchPayload();
     
+    // Perform search without changing form visibility
     this.performSearch(searchPayload);
+        this.isSearchFormVisible = !this.isSearchFormVisible;
+    // Keep the form in its current state (collapsed/small)
+    // The form will not expand automatically when search is clicked
   }
 
   private buildSearchPayload(): any {
@@ -938,8 +942,28 @@ export class ChatPreviewComponent implements OnInit {
   // New properties for sliding search form
   isSearchFormVisible: boolean = false;
 
-  // Method to toggle the search form visibility
+  // Method to toggle the search form visibility and reset form
   toggleSearchForm(): void {
     this.isSearchFormVisible = !this.isSearchFormVisible;
+    
+    // Clear search results and reset form to initial state
+    this.clearSearch();
+    this.cableData = [];
+    this.selectedCables = [];
+    this.apiResponse = null;
+    this.errorMessage = '';
+    this.accuracyPercentage = 0;
+    this.accuracyDetails = [];
+    
+    // Reset all dropdown options
+    this.closeDropdown();
+    
+    // Clear all autocomplete options
+    this.fiberCountOptions = [];
+    this.typeOfCableOptions = [];
+    this.fiberTypeOptions = [];
+    this.nescConditionsOptions = [];
+    this.diameterOptions = [];
+    this.tensileStrengthOptions = [];
   }
 }

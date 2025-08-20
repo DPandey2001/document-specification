@@ -36,7 +36,7 @@ header {
 }
 
 .history-section {
-  width: 200px;
+  width: 300px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -44,16 +44,8 @@ header {
   flex-direction: column;
   transition: all 0.3s ease;
   overflow: hidden;
-  
-  &.collapsed {
-    height: 60px;
-    min-height: 60px;
-  }
-  
-  &:not(.collapsed) {
-    height: 500px;
-    padding: 1rem;
-  }
+  height: 500px;
+  padding: 1rem;
 }
 
 .search-header {
