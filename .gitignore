@@ -1,0 +1,38 @@
+# Ignore input and output documents
+input_docs/
+output_json/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Node modules
+node_modules/
+
+# Angular build output
+dist/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ignore PDFs in Angular assets
+salesaidocumentation/src/assets/pdf/
+
+# Ignore server uploads/json folder
+salesaidocumentation/server/uploads/json/
