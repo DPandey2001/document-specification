@@ -947,23 +947,23 @@ export class ChatPreviewComponent implements OnInit {
     this.isSearchFormVisible = !this.isSearchFormVisible;
     
     // Clear search results and reset form to initial state
-    this.clearSearch();
-    this.cableData = [];
-    this.selectedCables = [];
-    this.apiResponse = null;
-    this.errorMessage = '';
-    this.accuracyPercentage = 0;
-    this.accuracyDetails = [];
+    // this.clearSearch();
+    // this.cableData = [];
+    // this.selectedCables = [];
+    // this.apiResponse = null;
+    // this.errorMessage = '';
+    // this.accuracyPercentage = 0;
+    // this.accuracyDetails = [];
     
     // Reset all dropdown options
-    this.closeDropdown();
+    // this.closeDropdown();
     
     // Clear all autocomplete options
-    this.fiberCountOptions = [];
-    this.typeOfCableOptions = [];
-    this.fiberTypeOptions = [];
-    this.nescConditionsOptions = [];
-    this.diameterOptions = [];
-    this.tensileStrengthOptions = [];
+    // this.fiberCountOptions = [];
+    // this.typeOfCableOptions = [];
+    // this.fiberTypeOptions = [];
+    // this.nescConditionsOptions = [];
+    // this.diameterOptions = [];
+    // this.tensileStrengthOptions = [];
   }
 }

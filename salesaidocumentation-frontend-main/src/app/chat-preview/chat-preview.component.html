@@ -133,12 +133,15 @@
               <h3>Action</h3>
               <input type="checkbox" [(ngModel)]="selectedCables[i]" (change)="onCheckboxChange(i)" id="cable-{{i}}">
               <label for="cable-{{i}}" class="checkbox-label"></label>
-              <button class="toggle-btn" (click)="toggleCableDetails(i)">
+              <!-- <button class="toggle-btn" (click)="toggleCableDetails(i)">
                 <span class="chevron-icon" [ngClass]="{'rotated': expandedCableIndex === i}">▶</span>
-              </button>
+              </button> -->
             </div>
-           
-            <div class="cable-item">
+           <div class="cable-item">
+              <h3  (click)="toggleCableDetails(i)">Cable Description</h3>
+              <p (click)="toggleCableDetails(i)">{{cable.cableDescription}}</p>
+            </div>
+            <div style="margin-left: 20px;" class="cable-item">
               <h3>Accuracy</h3>
               <div class="accuracy-display">
                 <div class="accuracy-bar">
@@ -156,10 +159,7 @@
               </a>
               <span *ngIf="!cable.datasheetURL" class="no-pdf">No PDF</span>
             </div>
-             <div class="cable-item">
-              <h3>Cable Description</h3>
-              <p>{{cable.cableDescription}}</p>
-            </div>
+             
           </div>
           
           <!-- Individual cable details section - shown only for this cable -->
