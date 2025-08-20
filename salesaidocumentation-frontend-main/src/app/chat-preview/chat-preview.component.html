@@ -16,8 +16,8 @@
     </button>
   </div>
 
-  <!-- Sliding search form -->
-  <div class="history-section" [class.visible]="isSearchFormVisible" [class.hidden]="!isSearchFormVisible">
+  <!-- Fixed search form - no collapse behavior -->
+  <div class="history-section" [class.visible]="isSearchFormVisible" [class.hidden]="isSearchFormVisible">
     <h3 style="text-align: center; margin: 0; padding: 1rem 0;"> Search Parameters</h3>
     <div style="flex: 1; overflow-y: auto; border: 1px solid #ddd; margin: 0 0px;">
       <ul style="width: 95%; padding: 10px; margin: 0; list-style-type: none;">

@@ -342,15 +342,15 @@ export class ChatPreviewComponent implements OnInit {
   }
 
   onSearch(): void {
+      this.isSearchFormVisible = !this.isSearchFormVisible;
     console.log('Search parameters:', this.searchParams);
     
     const searchPayload = this.buildSearchPayload();
     
     // Perform search without changing form visibility
     this.performSearch(searchPayload);
-        this.isSearchFormVisible = !this.isSearchFormVisible;
-    // Keep the form in its current state (collapsed/small)
-    // The form will not expand automatically when search is clicked
+    // Keep the form visible and maintain its size
+    // The form will not collapse or become small when search is clicked
   }
 
   private buildSearchPayload(): any {
