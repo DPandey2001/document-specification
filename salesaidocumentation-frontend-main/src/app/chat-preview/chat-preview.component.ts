@@ -942,6 +942,28 @@ export class ChatPreviewComponent implements OnInit {
   // New properties for sliding search form
   isSearchFormVisible: boolean = false;
 
+  clearallfiters(){
+    
+    // Clear search results and reset form to initial state
+    this.clearSearch();
+    this.cableData = [];
+    this.selectedCables = [];
+    this.apiResponse = null;
+    this.errorMessage = '';
+    this.accuracyPercentage = 0;
+    this.accuracyDetails = [];
+    
+    // Reset all dropdown options
+    this.closeDropdown();
+    
+    // Clear all autocomplete options
+    this.fiberCountOptions = [];
+    this.typeOfCableOptions = [];
+    this.fiberTypeOptions = [];
+    this.nescConditionsOptions = [];
+    this.diameterOptions = [];
+    this.tensileStrengthOptions = [];
+  }
   // Method to toggle the search form visibility and reset form
   toggleSearchForm(): void {
     this.isSearchFormVisible = !this.isSearchFormVisible;
