@@ -153,7 +153,7 @@ export class FileUploadComponent implements OnInit {
     
     this.http.post(hfclApiUrl, cableData, {
       headers: { 
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json' 
       }
     }).subscribe({
       next: (response: any) => {
