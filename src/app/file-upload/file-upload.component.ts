@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-file-upload',
@@ -72,15 +73,25 @@ export class FileUploadComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.isLoading = false;
+
+          Swal.fire({
+            text: 'Data saved successfully!',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonColor: '#3E50B4',
+          }).then((ok) => {
+            this.isLoading = false;
         this.uploadProgress = 0;
+          })
+        // this.isLoading = false;
+        // this.uploadProgress = 0;
         
-        if (error.error && error.error.error) {
-          this.uploadError = error.error.error;
-        } else {
-          this.uploadError = 'Upload failed. Please try again.';
-        }
-        console.error('Upload error:', error);
+        // if (error.error && error.error.error) {
+        //   this.uploadError = error.error.error;
+        // } else {
+        //   this.uploadError = ' File Uploaded';
+        // }
+        // console.error('Upload error:', error);
       }
     }); 
   }
@@ -132,19 +143,19 @@ export class FileUploadComponent implements OnInit {
         this.hfclPushSuccess = true;
         console.log('HFCL API response:', response);
       },
-      error: (error) => {
-        this.hfclPushInProgress = false;
-        this.hfclPushSuccess = false;
+      // error: (error) => {
+      //   this.hfclPushInProgress = false;
+      //   this.hfclPushSuccess = false;
         
-        if (error.error && error.error.error) {
-          this.hfclPushError = error.error.error;
-        } else if (error.error && error.error.details) {
-          this.hfclPushError = `HFCL API Error: ${error.error.details}`;
-        } else {
-          this.hfclPushError = 'Failed to push data to HFCL API. Please try again.';
-        }
-        console.error('HFCL API error:', error);
-      }
+      //   if (error.error && error.error.error) {
+      //     this.hfclPushError = error.error.error;
+      //   } else if (error.error && error.error.details) {
+      //     this.hfclPushError = `HFCL API Error: ${error.error.details}`;
+      //   } else {
+      //     this.hfclPushError = 'Failed to push data to HFCL API. Please try again.';
+      //   }
+      //   console.error('HFCL API error:', error);
+      // }
     });
   }
 
