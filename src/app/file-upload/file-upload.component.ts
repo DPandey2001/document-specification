@@ -75,7 +75,7 @@ export class FileUploadComponent implements OnInit {
       error: (error) => {
 
           Swal.fire({
-            text: 'Data saved successfully!',
+            text: 'Data saved successfully!', 
             icon: 'success',
             showCancelButton: false,
             confirmButtonColor: '#3E50B4',
