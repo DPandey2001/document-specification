@@ -11,6 +11,7 @@ import uuid
 import tempfile
 import pdfplumber
 import re
+import httpx
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -1069,3 +1070,142 @@ async def api_upload_proxy(request: Request):
         import traceback
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
+
+# --- HFCL API Integration ---
+def map_to_hfcl_format(extracted_data, filename):
+    """
+    Map extracted PDF data to HFCL API format
+    {
+      "cableID": 0,
+      "cableDescription": "",
+      "fiberCount": "",
+      "typeofCable": "",
+      "span": "",
+      "tube": "",
+      "tubeColorCoding": "",
+      "fiberType": "",
+      "diameter": "",
+      "tensile": "",
+      "nescCondition": "",
+      "crush": "",
+      "blowingLength": "",
+      "datasheetURL": "",
+      "isActive": "Y"
+    }
+    """
+    # Get the first result (usually the primary fiber count)
+    if not extracted_data or not extracted_data.get("results"):
+        return None
+    
+    result = extracted_data["results"][0]
+    specs = result["technical_specifications"]
+    
+    # Helper function to extract value from nested specifications
+    def get_spec_value(section_name, param_name, default=""):
+        if section_name in specs and param_name in specs[section_name]:
+            return specs[section_name][param_name]
+        return default
+    
+    # Extract values with fallbacks
+    cable_description = filename.replace('.pdf', '').replace('_', ' ').title()
+    fiber_count = get_spec_value("Cable Construction", "Fiber Count", "")
+    cable_type = get_spec_value("Cable Construction", "Type Of Cable", "Fiber Optic Cable")
+    tube_count = get_spec_value("Cable Construction", "Number Of Loose Tubes", "")
+    cable_diameter = get_spec_value("Physical Specifications", "Cable Diameter", "")
+    tensile_strength = get_spec_value("Cable Characteristics", "Max. Tensile Strength", "")
+    crush_resistance = get_spec_value("Cable Characteristics", "Max. Crush Resistance", "")
+    
+    # Extract color coding if available
+    tube_color_coding = ""
+    if "Colour Coding" in specs and "Fibre Colour" in specs["Colour Coding"]:
+        color_mapping = specs["Colour Coding"]["Fibre Colour"]
+        tube_color_coding = ", ".join([f"{k}:{v}" for k, v in color_mapping.items()])
+    
+    # Extract fiber type
+    fiber_type = get_spec_value("Fiber Characteristics", "Fiber Type", "Single Mode")
+    
+    hfcl_data = {
+        "cableID": 0,  # Will be assigned by HFCL system
+        "cableDescription": cable_description,
+        "fiberCount": fiber_count,
+        "typeofCable": cable_type,
+        "span": "Standard",  # Default value
+        "tube": tube_count,
+        "tubeColorCoding": tube_color_coding,
+        "fiberType": fiber_type,
+        "diameter": cable_diameter,
+        "tensile": tensile_strength,
+        "nescCondition": "Compliant",  # Default value
+        "crush": crush_resistance,
+        "blowingLength": "2000m",  # Default value
+        "datasheetURL": f"https://example.com/datasheets/{filename}",
+        "isActive": "Y"
+    }
+    
+    return hfcl_data
+
+@app.post("/api/push-to-hfcl")
+async def push_to_hfcl_api(extracted_data: dict):
+    """
+    Push extracted data to HFCL API in the required format
+    """
+    try:
+        # Extract filename from the data
+        filename = extracted_data.get("metadata", {}).get("source_file", "unknown.pdf")
+        
+        # Map to HFCL format
+        hfcl_payload = map_to_hfcl_format(extracted_data, filename)
+        if not hfcl_payload:
+            return JSONResponse(
+                status_code=400, 
+                content={"error": "No valid data to push to HFCL API"}
+            )
+        
+        # HFCL API endpoint
+        hfcl_api_url = "https://www.hfcl.com/testapiforsap/api/datasheet/configureDatasheet"
+        
+        # Make the API call
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                hfcl_api_url,
+                json=hfcl_payload,
+                timeout=30.0  # 30 second timeout
+            )
+            
+            if response.status_code == 200:
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "message": "Data successfully pushed to HFCL API",
+                        "hfcl_response": response.json(),
+                        "sent_data": hfcl_payload
+                    }
+                )
+            else:
+                return JSONResponse(
+                    status_code=response.status_code,
+                    content={
+                        "error": f"HFCL API returned error: {response.status_code}",
+                        "details": response.text,
+                        "sent_data": hfcl_payload
+                    }
+                )
+                
+    except httpx.TimeoutException:
+        return JSONResponse(
+            status_code=408,
+            content={"error": "HFCL API request timed out"}
+        )
+    except httpx.RequestError as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Network error connecting to HFCL API: {str(e)}"}
+        )
+    except Exception as e:
+        print(f"[HFCL API ERROR] {e}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Internal server error: {str(e)}"}
+        )
