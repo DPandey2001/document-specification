@@ -52,7 +52,7 @@ export class FileUploadComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', this.selectedFile, this.selectedFile.name);
 
-    this.http.post('/api/upload', formData, {
+    this.http.post('/api/python-process', formData, {
       reportProgress: true,
       observe: 'events'
     }).subscribe({
@@ -67,31 +67,45 @@ export class FileUploadComponent implements OnInit {
           if (event.body && event.body.results) {
             this.extractedData = event.body.results;
             this.showResults = true;
+            
+            // Show success message with button to push to HFCL API
+            Swal.fire({
+              title: 'File processed successfully!',
+              text: 'File processed successfully using Python! Would you like to push the extracted data to HFCL API?',
+              icon: 'success',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, push to HFCL',
+              cancelButtonText: 'No, just view results',
+              confirmButtonColor: '#3E50B4',
+              cancelButtonColor: '#6c757d'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.pushToHfclApi();
+              }
+            });
           } else if (event.body && event.body.error) {
             this.uploadError = event.body.error;
           }
         }
       },
       error: (error) => {
-
-          Swal.fire({
-            text: 'Data saved successfully!', 
-            icon: 'success',
-            showCancelButton: false,
-            confirmButtonColor: '#3E50B4',
-          }).then((ok) => {
-            this.isLoading = false;
+        this.isLoading = false;
         this.uploadProgress = 0;
-          })
-        // this.isLoading = false;
-        // this.uploadProgress = 0;
         
-        // if (error.error && error.error.error) {
-        //   this.uploadError = error.error.error;
-        // } else {
-        //   this.uploadError = ' File Uploaded';
-        // }
-        // console.error('Upload error:', error);
+        if (error.error && error.error.error) {
+          this.uploadError = error.error.error;
+        } else {
+          this.uploadError = 'Error processing file with Python';
+        }
+        console.error('Upload error:', error);
+        
+        // Show error message
+        Swal.fire({
+          title: 'Error!',
+          text: this.uploadError,
+          icon: 'error',
+          confirmButtonColor: '#3E50B4',
+        });
       }
     }); 
   }
@@ -131,31 +145,65 @@ export class FileUploadComponent implements OnInit {
     this.hfclPushSuccess = false;
     this.hfclPushError = '';
 
-    // Use the first result (primary fiber count)
-    const dataToPush = {
-      results: this.extractedData,
-      metadata: this.extractedData[0]?.metadata || {}
-    };
-
-    this.http.post('/api/push-to-hfcl', dataToPush).subscribe({
+    // Send each cable data individually to HFCL API
+    const hfclApiUrl = 'https://www.hfcl.com/testapiforsap/api/datasheet/configureDatasheet';
+    
+    // Prepare the data in the exact format expected by HFCL API
+    const cableData = this.extractedData[0]; // Use the first cable data
+    
+    this.http.post(hfclApiUrl, cableData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).subscribe({
       next: (response: any) => {
         this.hfclPushInProgress = false;
         this.hfclPushSuccess = true;
         console.log('HFCL API response:', response);
-      },
-      // error: (error) => {
-      //   this.hfclPushInProgress = false;
-      //   this.hfclPushSuccess = false;
         
-      //   if (error.error && error.error.error) {
-      //     this.hfclPushError = error.error.error;
-      //   } else if (error.error && error.error.details) {
-      //     this.hfclPushError = `HFCL API Error: ${error.error.details}`;
-      //   } else {
-      //     this.hfclPushError = 'Failed to push data to HFCL API. Please try again.';
-      //   }
-      //   console.error('HFCL API error:', error);
-      // }
+        // Show success message
+        Swal.fire({
+          title: 'Success!',
+          text: 'Data successfully pushed to HFCL API',
+          icon: 'success',
+          confirmButtonColor: '#3E50B4',
+        });
+      },
+      error: (error) => {
+        this.hfclPushInProgress = false;
+        this.hfclPushSuccess = false;
+        
+        console.error('HFCL API error:', error);
+        
+        let errorMessage = 'Failed to push data to HFCL API. Please try again.';
+        
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          } else if (error.error.error) {
+            errorMessage = error.error.error;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        // Handle CORS errors specifically
+        if (errorMessage.includes('CORS') || error.status === 0) {
+          errorMessage = 'CORS error: Unable to connect to HFCL API. Please check if the API allows cross-origin requests.';
+        }
+        
+        this.hfclPushError = errorMessage;
+        
+        // Show error message
+        Swal.fire({
+          title: 'Error!',
+          text: errorMessage,
+          icon: 'error',
+          confirmButtonColor: '#3E50B4',
+        });
+      }
     });
   }
 

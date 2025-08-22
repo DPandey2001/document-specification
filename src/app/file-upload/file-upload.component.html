@@ -80,7 +80,7 @@
   </div>
 
   <!-- Results Section -->
-  <div *ngIf="showResults && extractedData.length > 0" class="results-section">
+  <!-- <div *ngIf="showResults && extractedData.length > 0" class="results-section">
     <h3 style="text-align: center; margin-bottom: 1.5rem; color: #041a72;">
       Extracted Cable Specifications
     </h3>
@@ -91,7 +91,6 @@
         <span class="file-info">Source: {{result.metadata?.source_file || 'Unknown file'}}</span>
       </div>
       
-      <!-- Technical Specifications -->
       <div *ngIf="hasContent(result.technical_specifications)" class="specifications">
         <h5>Technical Specifications:</h5>
         <div class="specs-grid">
@@ -105,7 +104,6 @@
         </div>
       </div>
       
-      <!-- Document Content (if available) -->
       <div *ngIf="hasContent(result.document_content)" class="document-content">
         <h5>Document Content:</h5>
         <div class="content-section">
@@ -120,7 +118,6 @@
         No data extracted from this file.
       </div>
 
-      <!-- HFCL API Push Button -->
       <div class="hfcl-api-section" *ngIf="hasContent(result.technical_specifications)">
         <div class="hfcl-controls">
           <button class="hfcl-btn" 
@@ -145,9 +142,9 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <div *ngIf="showResults && extractedData.length === 0" class="no-results">
+  <!-- <div *ngIf="showResults && extractedData.length === 0" class="no-results">
     <p>No cable specifications were extracted from the uploaded file.</p>
-  </div>
+  </div> -->
 </div>

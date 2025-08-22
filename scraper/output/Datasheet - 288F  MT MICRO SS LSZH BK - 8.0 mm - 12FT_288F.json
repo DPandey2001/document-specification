@@ -1,9 +1,9 @@
 {
-  "cableID": 9,
+  "cableID": 0,
   "cableDescription": "288F  Multitube Micro OFC",
   "fiberCount": "288",
   "typeofCable": "MT",
-  "span": "N/A",
+  "span": "N/A", 
   "tube": "Standard",
   "tubeColorCoding": "DIN VDE 0888",
   "fiberType": "SM",

@@ -127,14 +127,11 @@ def parse_datasheets(files: Dict[str, str]) -> List[Dict[str, Any]]:
         A list of dictionaries, with each dictionary representing a cable variant.
     """
     all_cables = []
-    current_id = 1
     for filename, content in files.items():
         try:
             parsed_cables = _parse_single_datasheet(filename, content)
             for cable in parsed_cables:
-                cable['cableID'] = current_id
                 all_cables.append(cable)
-                current_id += 1
         except Exception as e:
             print(f"--> Could not process file {filename}. Error: {e}")
     return all_cables
